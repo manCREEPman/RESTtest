@@ -1,0 +1,41 @@
+object GamersResource1: TGamersResource1
+  OldCreateOrder = False
+  Height = 235
+  Width = 392
+  object FDConnection1: TFDConnection
+    Params.Strings = (
+      'Database=C:\databases\TESTBASE.FDB'
+      'User_Name=sysdba'
+      'Password=masterkey'
+      'CharacterSet=WIN1251'
+      'DriverID=FB')
+    Connected = True
+    LoginPrompt = False
+    Left = 80
+    Top = 88
+  end
+  object FDQuery1: TFDQuery
+    Connection = FDConnection1
+    SQL.Strings = (
+      'select * from new_table;')
+    Left = 192
+    Top = 88
+  end
+  object FDQuery2: TFDQuery
+    Connection = FDConnection1
+    SQL.Strings = (
+      'select * from games;')
+    Left = 288
+    Top = 88
+  end
+  object FDQuery3: TFDQuery
+    Connection = FDConnection1
+    Left = 192
+    Top = 160
+  end
+  object FDQuery4: TFDQuery
+    Connection = FDConnection1
+    Left = 288
+    Top = 160
+  end
+end

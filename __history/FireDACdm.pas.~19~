@@ -1,0 +1,134 @@
+unit FireDACdm;
+
+// EMS Resource Module
+
+interface
+
+uses
+  System.SysUtils, System.Classes, System.JSON,
+  EMS.Services, EMS.ResourceAPI, EMS.ResourceTypes, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
+  FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys,
+  FireDAC.Phys.FB, FireDAC.Phys.FBDef, FireDAC.ConsoleUI.Wait,
+  FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
+  FireDAC.Comp.Client, FireDAC.Stan.StorageJSON, Data.DB, FireDAC.Comp.DataSet, Vcl.Dialogs;
+
+type
+  [ResourceName('FireDAC')]
+  TFireDACResource1 = class(TDataModule)
+    FDConnection1: TFDConnection;
+    FDQuery1: TFDQuery;
+    FDStanStorageJSONLink1: TFDStanStorageJSONLink;
+    FDSchemaAdapter1: TFDSchemaAdapter;
+    FDQuery2: TFDQuery;
+  published
+    function GetUsersData(): TJSONObject;
+    function GetGameData(): TJSONObject;
+    procedure Get(const AContext: TEndpointContext; const ARequest: TEndpointRequest; const AResponse: TEndpointResponse);
+    [ResourceSuffix('{item}')]
+    procedure GetItem(const AContext: TEndpointContext; const ARequest: TEndpointRequest; const AResponse: TEndpointResponse);
+  end;
+
+implementation
+
+{%CLASSGROUP 'System.Classes.TPersistent'}
+
+{$R *.dfm}
+
+function TFireDACResource1.GetUsersData(): TJSONObject;
+var dbArrayData: TJSONArray;
+mainContainer, dbRow: TJSONObject;
+columnName: string;
+I: Integer;
+begin
+    FDQuery1.Open();
+    FDQuery1.First;
+    dbArrayData:= TJSONArray.Create;
+    while (not FDQuery1.EOF) do
+    begin
+      dbRow:= TJSONObject.Create;
+      for I := 0 to FDQuery1.FieldDefs.Count - 1 do
+      begin
+        columnName:= FDQuery1.FieldDefs[I].Name;
+        if (FDQuery1.FieldByName(columnName).DataType = ftInteger) or (FDQuery1.FieldByName(columnName).DataType = ftFloat) then
+            dbRow.AddPair(TJSONPair.Create(TJSONString.Create(columnName),
+                          TJSONNumber.Create(FDQuery1.FieldByName(columnName).AsString)))
+        else dbRow.AddPair(TJSONPair.Create(TJSONString.Create(columnName),
+                           TJSONString.Create(FDQuery1.FieldByName(columnName).AsString)));
+      end;
+      dbArrayData.Add(dbRow);
+      dbRow:= TJSONObject.Create;
+      FDQuery1.Next;
+    end;
+    FDQuery1.Close;
+
+    mainContainer.AddPair('data', dbArrayData);
+    Result:= mainContainer;
+end;
+
+function TFireDACResource1.GetGameData(): TJSONObject;
+begin
+
+end;
+
+procedure TFireDACResource1.Get(const AContext: TEndpointContext; const ARequest: TEndpointRequest; const AResponse: TEndpointResponse);
+var
+ dbArrayData: TJSONArray;
+ mainContainer, dbRow: TJSONObject;
+ columnName: string;
+ I: Integer;
+ typeData: string;
+begin
+    typeData := ARequest.Headers.TryGetValue('type');
+    case typeData of
+    'userdata': println();
+//    здесь вызов функции получения пользовательской инфы
+    'gamedata':  println();
+      // вызов функции получения геймерской инфы
+
+    end;
+
+    FDQuery1.Open();
+    FDQuery1.First;
+    dbArrayData:= TJSONArray.Create;
+    while (not FDQuery1.EOF) do
+    begin
+      dbRow:= TJSONObject.Create;
+      for I := 0 to FDQuery1.FieldDefs.Count - 1 do
+      begin
+        columnName:= FDQuery1.FieldDefs[I].Name;
+        if (FDQuery1.FieldByName(columnName).DataType = ftInteger) or (FDQuery1.FieldByName(columnName).DataType = ftFloat) then
+            dbRow.AddPair(TJSONPair.Create(TJSONString.Create(columnName),
+                          TJSONNumber.Create(FDQuery1.FieldByName(columnName).AsString)))
+        else dbRow.AddPair(TJSONPair.Create(TJSONString.Create(columnName),
+                           TJSONString.Create(FDQuery1.FieldByName(columnName).AsString)));
+      end;
+      dbArrayData.Add(dbRow);
+      dbRow:= TJSONObject.Create;
+      FDQuery1.Next;
+    end;
+
+    FDQuery1.Close;
+    mainContainer.AddPair('data', dbArrayData);
+    AResponse.Body.SetValue(mainContainer, True);
+end;
+
+procedure TFireDACResource1.GetItem(const AContext: TEndpointContext; const ARequest: TEndpointRequest; const AResponse: TEndpointResponse);
+var
+  LItem: string;
+begin
+  LItem := ARequest.Params.Values['item'];
+  // Sample code
+  AResponse.Body.SetValue(TJSONString.Create('FireDAC ' + LItem), True)
+end;
+
+procedure Register;
+begin
+  RegisterResource(TypeInfo(TFireDACResource1));
+end;
+
+initialization
+  Register;
+end.
+
+

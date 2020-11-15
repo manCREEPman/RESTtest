@@ -1,0 +1,10 @@
+﻿[DBGrid1]
+Coordinates=266,10,64,36
+
+[DataSource1]
+Coordinates=0,0,89,36
+
+[]
+Coordinates=10,10,113,344
+Visible=True
+

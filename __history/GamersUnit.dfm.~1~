@@ -1,0 +1,5 @@
+object GamersResource1: TGamersResource1
+  OldCreateOrder = False
+  Height = 387
+  Width = 455
+end

@@ -1,0 +1,36 @@
+object FireDACResource1: TFireDACResource1
+  OldCreateOrder = False
+  Height = 330
+  Width = 394
+  object FDConnection1: TFDConnection
+    Params.Strings = (
+      'ConnectionDef=TestBase')
+    Connected = True
+    LoginPrompt = False
+    Left = 80
+    Top = 80
+  end
+  object FDQuery: TFDQuery
+    Connection = FDConnection1
+    SchemaAdapter = FDSchemaAdapter1
+    SQL.Strings = (
+      'select * from new_table;')
+    Left = 288
+    Top = 80
+  end
+  object FDStanStorageJSONLink1: TFDStanStorageJSONLink
+    Left = 80
+    Top = 208
+  end
+  object FDSchemaAdapter1: TFDSchemaAdapter
+    Left = 288
+    Top = 208
+  end
+  object FDQuery2: TFDQuery
+    Connection = FDConnection1
+    SQL.Strings = (
+      'select * from games;')
+    Left = 288
+    Top = 16
+  end
+end
